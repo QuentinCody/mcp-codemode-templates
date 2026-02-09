@@ -62,8 +62,17 @@ export function registerMetaTools(
 					doId: options.doId,
 				});
 				const result = await evaluator();
-				const resultStr = JSON.stringify(result);
 
+				// The isolate's try/catch returns { error, stack } on JS errors
+				if (result && typeof result === "object" && "error" in result && "stack" in result) {
+					const errResult = result as { error: string; stack: string };
+					options.logExecution(code, null, errResult.error);
+					return {
+						content: [{ type: "text", text: JSON.stringify({ error: errResult.error, stack: errResult.stack }) }],
+					};
+				}
+
+				const resultStr = result === undefined ? "undefined" : JSON.stringify(result);
 				options.logExecution(code, resultStr, null);
 
 				return {

@@ -38,7 +38,7 @@ export class ToolRegistry {
 				try {
 					const result = await tool.handler(input, ctx);
 					return {
-						content: [{ type: "text", text: JSON.stringify(result) }],
+						content: [{ type: "text", text: result === undefined ? "undefined" : JSON.stringify(result) }],
 					};
 				} catch (e: unknown) {
 					const error = e instanceof Error ? e.message : String(e);
