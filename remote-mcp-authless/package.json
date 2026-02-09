@@ -13,7 +13,6 @@
 	},
 	"dependencies": {
 		"agents": "^0.3.6",
-		"mcp-shared": "*",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {

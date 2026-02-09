@@ -9,10 +9,12 @@ A remote MCP server on Cloudflare Workers implementing the **Code Mode** pattern
 
 ## Get Started
 
+[![Deploy to Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/QuentinCody/mcp-codemode-templates/tree/main/remote-mcp-authless)
+
 ```bash
-# From the monorepo root:
-npm install
+# From this directory:
 cd remote-mcp-authless
+npm install
 npm run dev
 ```
 
@@ -114,7 +116,7 @@ https://remote-mcp-server-authless.<your-account>.workers.dev/mcp
 
 ## Architecture
 
-- **Monorepo** — Shared `mcp-shared` package keeps both servers in sync
+- **Self-contained template** — Includes a vendored copy of the shared runtime in `src/mcp-shared/` so Deploy-to-Workers can build from this subdirectory
 - **McpAgent** — Extends Cloudflare's Agent class with MCP server capabilities
 - **SQLite-in-DO** — Each Durable Object instance has its own embedded SQLite database
 - **Code Mode** — V8 isolates via Worker Loader with CodeModeProxy for tool callbacks

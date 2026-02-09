@@ -16,7 +16,7 @@ interface SharedEnv {
 	CODE_MODE_PROXY?: Fetcher;
 }
 
-export class MyMCP extends McpAgent<Env, State, {}> {
+export class MyMCP extends McpAgent<Env, State, Record<string, never>> {
 	server = new McpServer({
 		name: "Code Mode MCP Server",
 		version: "1.0.0",

@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: remote-mcp-authless/package-lock.json
+
+      - name: Install dependencies
+        working-directory: remote-mcp-authless
+        run: npm ci
+
+      - name: Type check
+        working-directory: remote-mcp-authless
+        run: npm run type-check
+
+      - name: Lint
+        working-directory: remote-mcp-authless
+        run: npx biome lint --max-diagnostics=20 src
