@@ -1,0 +1,4 @@
+{
+  "private": true,
+  "workspaces": ["shared", "remote-mcp-server", "remote-mcp-authless"]
+}

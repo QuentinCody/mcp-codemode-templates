@@ -1,0 +1,25 @@
+node_modules/
+**/node_modules/
+
+# Wrangler local/dev artifacts
+.wrangler/
+**/.wrangler/
+**/.wrangler-out/
+**/.wrangler-out*/
+
+# Logs
+*.log
+logs/
+
+# Local env and editor files
+.env
+.env.*
+.DS_Store
+.idea/
+.vscode/
+
+# Build/cache artifacts
+dist/
+build/
+coverage/
+*.tsbuildinfo

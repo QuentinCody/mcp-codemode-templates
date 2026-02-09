@@ -1,0 +1,44 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "remote-mcp-server-authless",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-03-10",
+	"compatibility_flags": ["nodejs_compat"],
+	"migrations": [
+		{
+			"new_sqlite_classes": ["MyMCP"],
+			"tag": "v1"
+		}
+	],
+	"durable_objects": {
+		"bindings": [
+			{
+				"class_name": "MyMCP",
+				"name": "MCP_OBJECT"
+			}
+		]
+	},
+	"observability": {
+		"enabled": true
+	},
+	// Worker Loader for V8 isolate execution (Code Mode)
+	// Requires Cloudflare beta access
+	"worker_loaders": [
+		{
+			"binding": "LOADER"
+		}
+	],
+	// Self-referencing service binding for CodeModeProxy
+	// Allows V8 isolates to call back to the DO via RPC
+	"services": [
+		{
+			"binding": "CODE_MODE_PROXY",
+			"service": "remote-mcp-server-authless",
+			"entrypoint": "CodeModeProxy"
+		}
+	]
+}
