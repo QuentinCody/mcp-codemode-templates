@@ -1,5 +1,5 @@
 /**
- * For more details on how to configure Wrangler, refer to:
+ * Remote MCP Server (Authless)
  * https://developers.cloudflare.com/workers/wrangler/configuration/
  */
 {
