@@ -18,7 +18,7 @@ export default {
 <html>
 <head><title>Code Mode MCP Server</title></head>
 <body>
-<h1>Code Mode MCP Server (CI/CD deploy test)</h1>
+<h1>Code Mode MCP Server</h1>
 <p>Connect to <code>/mcp</code> using an MCP client.</p>
 <h2>Available Tools:</h2>
 <ul>

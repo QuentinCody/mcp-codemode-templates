@@ -5,9 +5,7 @@ import { ToolRegistry } from "./registry/registry";
 import { sqlTools } from "./tools/sql";
 import { registerMetaTools } from "./tools/compute";
 
-type State = {
-	connectedAgents: number;
-};
+type State = Record<string, never>;
 
 // Minimal interface for shared code (actual Env declared per-server)
 interface SharedEnv {
@@ -22,9 +20,7 @@ export class MyMCP extends McpAgent<Env, State, Record<string, never>> {
 		version: "1.0.0",
 	});
 
-	initialState: State = {
-		connectedAgents: 0,
-	};
+	initialState: State = {};
 
 	// Guard against re-registering tools on reconnect
 	// (init() is called on each connection, but server persists across connections)

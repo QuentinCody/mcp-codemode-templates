@@ -7,13 +7,51 @@ function normalizeQuery(query: string): string {
 	return query.trim().replace(/\s+/g, " ");
 }
 
+/**
+ * Strip leading SQL comments from a normalized (trimmed, collapsed-whitespace) query.
+ * Handles both single-line (--) and block comments.
+ */
+function stripLeadingComments(query: string): string {
+	let result = query;
+	while (true) {
+		if (result.startsWith("--")) {
+			// Line comment: skip to end of line or end of string
+			const newlineIndex = result.indexOf("\n");
+			if (newlineIndex === -1) {
+				return "";
+			}
+			result = result.substring(newlineIndex + 1).trimStart();
+		} else if (result.startsWith("/*")) {
+			// Block comment: skip to closing */
+			const endIndex = result.indexOf("*/");
+			if (endIndex === -1) {
+				return "";
+			}
+			result = result.substring(endIndex + 2).trimStart();
+		} else {
+			break;
+		}
+	}
+	return result;
+}
+
 export function isReadOnly(query: string): boolean {
-	const upper = normalizeQuery(query).toUpperCase();
+	const normalized = normalizeQuery(query);
+	const upper = stripLeadingComments(normalized.toUpperCase());
+	// Reject multi-statement queries (semicolon anywhere prevents injection via chained statements)
+	if (upper.includes(";")) {
+		return false;
+	}
 	return READ_ONLY_PREFIXES.some((prefix) => upper.startsWith(prefix));
 }
 
 export function isBlocked(query: string): boolean {
-	const upper = normalizeQuery(query).toUpperCase();
+	const normalized = normalizeQuery(query);
+	const upper = stripLeadingComments(normalized.toUpperCase());
+	// Reject multi-statement queries to prevent chaining a blocked statement after an allowed one
+	if (upper.includes(";")) {
+		return true;
+	}
 	return BLOCKED_STATEMENTS.some(
 		(stmt) => upper.startsWith(stmt) || upper.includes(` ${stmt} `) || upper.includes(` ${stmt}(`)
 	);

@@ -23,12 +23,13 @@ export function registerMetaTools(
 				"JavaScript code to execute in a sandboxed V8 isolate. " +
 				"The code has access to a `codemode` object with typed functions for all other tools. " +
 				"The code should be a function body (not wrapped in a function). " +
-				"Use `return` to return a value. Example: `const rows = await codemode.sql_query({query: 'SELECT * FROM agents'}); return rows;`"
+				"Use `return` to return a value. Example: `const rows = await codemode.sql_query({query: 'SELECT * FROM execution_log'}); return rows;`"
 			),
 		},
 		async ({ code }) => {
 			if (!options.loader) {
 				return {
+					isError: true,
 					content: [
 						{
 							type: "text",
@@ -43,6 +44,7 @@ export function registerMetaTools(
 			}
 			if (!options.proxy) {
 				return {
+					isError: true,
 					content: [
 						{
 							type: "text",
@@ -68,6 +70,7 @@ export function registerMetaTools(
 					const errResult = result as { error: string; stack: string };
 					options.logExecution(code, null, errResult.error);
 					return {
+						isError: true,
 						content: [{ type: "text", text: JSON.stringify({ error: errResult.error, stack: errResult.stack }) }],
 					};
 				}
@@ -82,6 +85,7 @@ export function registerMetaTools(
 				const error = e instanceof Error ? e.message : String(e);
 				options.logExecution(code, null, error);
 				return {
+					isError: true,
 					content: [{ type: "text", text: JSON.stringify({ error }) }],
 				};
 			}

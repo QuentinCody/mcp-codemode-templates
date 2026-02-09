@@ -4,7 +4,6 @@ A remote MCP server on Cloudflare Workers implementing the **Code Mode** pattern
 
 - **SQLite-in-DO** — Full SQL database per instance (up to 10GB, zero-latency)
 - **Code Mode** — Execute JavaScript in sandboxed V8 isolates with typed tool access
-- **Agent Registry** — Track connected agents with metadata
 - **No authentication** — Public access, ideal for development and private networks
 
 ## Get Started
@@ -39,13 +38,6 @@ Agents can create their own tables, indexes, and manage data entirely through SQ
 |------|--------|-------------|
 | `execute_code` | `code` | Execute JavaScript in a sandboxed V8 isolate with access to all tools via `codemode` object. |
 | `get_type_schema` | (none) | Returns TypeScript type definitions for all tools, so agents can write well-typed code. |
-
-### System
-
-| Tool | Params | Description |
-|------|--------|-------------|
-| `register_agent` | `id`, `name?`, `metadata?` | Register agent identity. Updates last_seen_at on re-registration. |
-| `list_agents` | (none) | List all registered agents. |
 
 ## How Code Mode Works
 
@@ -120,14 +112,13 @@ https://remote-mcp-server-authless.<your-account>.workers.dev/mcp
 - **McpAgent** — Extends Cloudflare's Agent class with MCP server capabilities
 - **SQLite-in-DO** — Each Durable Object instance has its own embedded SQLite database
 - **Code Mode** — V8 isolates via Worker Loader with CodeModeProxy for tool callbacks
-- **Agent Registry** — SQLite-backed agent tracking with metadata
 
 ## Customization
 
-Tools are defined in `shared/src/tools/`. To add new tools:
+Tools are defined in `src/mcp-shared/tools/`. To add new tools:
 
-1. Create a new file in `shared/src/tools/`
-2. Export a `registerXTools(server, sql)` function
-3. Call it from `shared/src/agent.ts` in the `init()` method
-4. Add tool definitions to `getToolDefinitions()` for Code Mode type generation
-5. Add a case to `callTool()` for V8 isolate access
+1. Create a new file in `src/mcp-shared/tools/`
+2. Export a `ToolEntry[]` array (see `src/mcp-shared/tools/sql.ts` for the pattern)
+3. Register the tools in `src/mcp-shared/agent.ts` in the `init()` method via `this.registry.add(...yourTools)`
+
+The registry automatically handles MCP registration, isolate call routing, and type generation — no manual `callTool()` cases needed. Tool definitions for type generation come from `registry.getDefinitions()`.

@@ -43,6 +43,7 @@ export class ToolRegistry {
 				} catch (e: unknown) {
 					const error = e instanceof Error ? e.message : String(e);
 					return {
+						isError: true,
 						content: [{ type: "text", text: JSON.stringify({ error }) }],
 					};
 				}
