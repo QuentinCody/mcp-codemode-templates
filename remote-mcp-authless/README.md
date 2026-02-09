@@ -29,8 +29,9 @@ Server runs at `http://localhost:8787`
 |------|--------|-------------|
 | `sql_query` | `query`, `params?` | Execute SELECT/PRAGMA/EXPLAIN queries. Returns rows as JSON. |
 | `sql_exec` | `query`, `params?` | Execute DDL/DML (CREATE TABLE, INSERT, UPDATE, DELETE). |
+| `sql_exec_batch` | `statements` | Execute multiple DDL/DML statements in a single call. Much faster than calling `sql_exec` in a loop. |
 
-Agents can create their own tables, indexes, and manage data entirely through SQL. Parameterized queries prevent injection. `sql_exec` blocks ATTACH, DETACH, and LOAD_EXTENSION for safety.
+Agents can create their own tables, indexes, and manage data entirely through SQL. Parameterized queries prevent injection. `sql_exec` and `sql_exec_batch` block ATTACH, DETACH, and LOAD_EXTENSION for safety.
 
 ### Compute (Code Mode)
 
