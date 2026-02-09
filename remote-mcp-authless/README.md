@@ -109,10 +109,66 @@ https://remote-mcp-server-authless.<your-account>.workers.dev/mcp
 
 ## Architecture
 
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  MCP Client (Claude Desktop, Inspector, etc.)                   │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │ Streamable HTTP (/mcp)
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  Cloudflare Worker (HTTP Router)                                │
+│  src/index.ts                                                   │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │ Routes to Durable Object
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  MyMCP (Durable Object)                                         │
+│  src/mcp-shared/agent.ts                                        │
+│                                                                 │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │  ToolRegistry                                             │  │
+│  │  Registers tools, routes isolate calls, generates types   │  │
+│  └──────┬──────────────────────────────────┬─────────────────┘  │
+│         │                                  │                    │
+│         ▼                                  ▼                    │
+│  ┌──────────────┐                   ┌──────────────────────┐   │
+│  │  SQLite-in-DO │ ◄── Extension 1  │  Code Mode           │   │
+│  │              │                   │                      │   │
+│  │  sql_query   │                   │  execute_code        │   │
+│  │  sql_exec    │                   │  get_type_schema     │   │
+│  │  sql_exec_   │                   └──────────┬───────────┘   │
+│  │    batch     │                              │               │
+│  │              │                              │ Worker Loader  │
+│  │  Embedded    │                              ▼               │
+│  │  SQLite DB   │                   ┌──────────────────────┐   │
+│  │  (up to 10GB)│                   │  V8 Isolate          │   │
+│  │              │                   │  (sandboxed)         │   │
+│  │  this.sql    │                   │                      │   │
+│  │  tagged      │                   │  User code runs here │   │
+│  │  template    │                   │  with `codemode`     │   │
+│  │              │                   │  proxy object        │   │
+│  └──────────────┘                   └──────────┬───────────┘   │
+│         ▲                                      │               │
+│         │              ┌───────────────────┐   │               │
+│         │              │  CodeModeProxy    │◄──┘               │
+│         │              │  (service binding)│  RPC call         │
+│         │              └────────┬──────────┘                   │
+│         │                       │ Routes back to DO            │
+│         │                       ▼                              │
+│         └───── registry.handleIsolateCall() ───────────────────│
+│                (tool call completes, result returns to isolate) │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### How the pieces fit together
+
+- **MCP Server (core)** — The `MyMCP` Durable Object extends Cloudflare's `McpAgent` class. It hosts the MCP protocol, manages sessions, and owns the `ToolRegistry` that all tools register into.
+
+- **Extension 1: SQLite-in-DO** — Each DO instance has an embedded SQLite database accessible via `this.sql` (a tagged template literal). The SQL tools (`sql_query`, `sql_exec`, `sql_exec_batch`) provide safe, parameterized access with statement validation.
+
+- **Extension 2: Code Mode** — Sandboxed JavaScript execution via Cloudflare's Worker Loader API. User code runs in an ephemeral V8 isolate with a `codemode` proxy object. Tool calls inside the isolate (e.g., `codemode.sql_query(...)`) route through `CodeModeProxy` (a self-referencing service binding) back into the DO's `ToolRegistry`, which dispatches to the appropriate tool handler. Results flow back to the isolate.
+
 - **Self-contained template** — Includes a vendored copy of the shared runtime in `src/mcp-shared/` so Deploy-to-Workers can build from this subdirectory
-- **McpAgent** — Extends Cloudflare's Agent class with MCP server capabilities
-- **SQLite-in-DO** — Each Durable Object instance has its own embedded SQLite database
-- **Code Mode** — V8 isolates via Worker Loader with CodeModeProxy for tool callbacks
 
 ## Customization
 
