@@ -14,9 +14,11 @@ logs/
 # Local env and editor files
 .env
 .env.*
+.dev.vars
 .DS_Store
 .idea/
 .vscode/
+.zed/
 
 # Build/cache artifacts
 dist/

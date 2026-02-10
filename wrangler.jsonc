@@ -34,6 +34,10 @@
 	],
 	// Self-referencing service binding for CodeModeProxy
 	// Allows V8 isolates to call back to the DO via RPC
+	//
+	// WARNING: The "service" value below MUST match the top-level "name" field
+	// (currently "remote-mcp-server-authless"). If you rename your worker,
+	// update BOTH places or Code Mode will silently fail at runtime.
 	"services": [
 		{
 			"binding": "CODE_MODE_PROXY",

@@ -3,6 +3,7 @@ import { McpAgent } from "agents/mcp";
 import { initializeSchema } from "./schema";
 import { ToolRegistry } from "./registry/registry";
 import { sqlTools } from "./tools/sql";
+import { weatherTools } from "./tools/weather";
 import { registerMetaTools } from "./tools/compute";
 
 type State = Record<string, never>;
@@ -45,6 +46,7 @@ export class MyMCP extends McpAgent<Env, State, Record<string, never>> {
 
 		// Register data tools
 		this.registry.add(...sqlTools);
+		this.registry.add(...weatherTools);
 
 		// Register all data tools with MCP server
 		this.registry.registerAll(this.server);

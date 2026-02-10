@@ -1,13 +1,13 @@
 {
 	"name": "remote-mcp-server-authless",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"private": true,
 	"scripts": {
 		"deploy": "wrangler deploy",
-		"dev": "wrangler dev",
+		"dev": "wrangler dev --port 8788",
 		"format": "biome format --write",
 		"lint:fix": "biome lint --fix",
-		"start": "wrangler dev",
+		"start": "wrangler dev --port 8788",
 		"cf-typegen": "wrangler types",
 		"type-check": "tsc --noEmit"
 	},

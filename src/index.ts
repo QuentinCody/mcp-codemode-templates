@@ -25,6 +25,7 @@ export default {
 <li><b>sql_query</b> -- Execute SELECT queries against SQLite</li>
 <li><b>sql_exec</b> -- Execute DDL/DML (CREATE TABLE, INSERT, UPDATE, DELETE)</li>
 <li><b>sql_exec_batch</b> -- Execute multiple DDL/DML statements in one call</li>
+<li><b>get_weather</b> -- Get current weather for any city</li>
 <li><b>execute_code</b> -- Execute JavaScript in a sandboxed V8 isolate</li>
 <li><b>get_type_schema</b> -- Get TypeScript type definitions for all tools</li>
 </ul>
