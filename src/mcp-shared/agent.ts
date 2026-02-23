@@ -4,6 +4,8 @@ import { initializeSchema } from "./schema";
 import { ToolRegistry } from "./registry/registry";
 import { sqlTools } from "./tools/sql";
 import { weatherTools } from "./tools/weather";
+import { directQueryTools } from "./tools/direct-query";
+import { storeTools } from "./tools/store";
 import { registerMetaTools } from "./tools/compute";
 
 type State = Record<string, never>;
@@ -47,6 +49,10 @@ export class MyMCP extends McpAgent<Env, State, Record<string, never>> {
 		// Register data tools
 		this.registry.add(...sqlTools);
 		this.registry.add(...weatherTools);
+
+		// Register direct query tools (hidden — only callable from V8 isolates)
+		this.registry.add(...directQueryTools);
+		this.registry.add(...storeTools);
 
 		// Register all data tools with MCP server
 		this.registry.registerAll(this.server);

@@ -199,5 +199,21 @@ export function generateTypes(tools: ToolDefinition[]): string {
 
 	availableTools = `\ndeclare const codemode: {${availableTools}}`;
 
-	return `${availableTypes}\n${availableTools}\n`;
+	// Direct query helpers — injected into the V8 isolate alongside codemode
+	const queryHelpers = [
+		"",
+		"/** Execute a read-only SQL query. Returns rows directly. Faster than codemode.sql_query() for SELECT queries. */",
+		"declare function query(sql: string, params?: (string | number | boolean | null)[]): Promise<Record<string, unknown>[]>;",
+		"",
+		"/** Execute multiple read-only SQL queries in a single round-trip. Returns an array of row arrays. */",
+		"declare function queryBatch(queries: { sql: string; params?: (string | number | boolean | null)[] }[]): Promise<Array<Record<string, unknown>[]>>;",
+		"",
+		"/** Store an array of flat objects into a SQLite table. Creates table if needed, evolves schema for new columns. Returns a summary instead of full data. */",
+		"declare function store(",
+		"  tableName: string,",
+		"  data: Record<string, string | number | boolean | null>[]",
+		"): Promise<{ table: string; rows_inserted: number; columns: string[]; created?: boolean; columns_added?: string[] }>;",
+	].join("\n");
+
+	return `${availableTypes}\n${availableTools}\n${queryHelpers}\n`;
 }

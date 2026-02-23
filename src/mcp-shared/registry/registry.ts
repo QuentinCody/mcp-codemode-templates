@@ -30,9 +30,11 @@ export class ToolRegistry {
 	/**
 	 * Register all tools with the MCP server.
 	 * Wraps each handler to produce MCP-formatted responses.
+	 * Hidden tools are skipped — they're only callable from V8 isolates.
 	 */
 	registerAll(server: McpServer) {
 		for (const tool of this.tools) {
+			if (tool.hidden) continue;
 			const ctx = this.ctx;
 			server.tool(tool.name, tool.schema, async (input) => {
 				try {
@@ -67,12 +69,15 @@ export class ToolRegistry {
 	/**
 	 * Get tool definitions for type generation.
 	 * Returns the shape expected by generateTypes().
+	 * Hidden tools are excluded — they get separate type declarations.
 	 */
 	getDefinitions(): ToolDefinition[] {
-		return this.tools.map((t) => ({
-			name: t.name,
-			description: t.description,
-			inputSchema: t.schema,
-		}));
+		return this.tools
+			.filter((t) => !t.hidden)
+			.map((t) => ({
+				name: t.name,
+				description: t.description,
+				inputSchema: t.schema,
+			}));
 	}
 }

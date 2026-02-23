@@ -25,4 +25,6 @@ export interface ToolEntry {
 	description: string;
 	schema: Record<string, z.ZodType>;
 	handler: (input: Record<string, unknown>, ctx: ToolContext) => Promise<unknown>;
+	/** If true, tool is callable from V8 isolates but not exposed via MCP tools/list or type generation. */
+	hidden?: boolean;
 }

@@ -23,7 +23,13 @@ export function registerMetaTools(
 				"JavaScript code to execute in a sandboxed V8 isolate. " +
 				"The code has access to a `codemode` object with typed functions for all other tools. " +
 				"The code should be a function body (not wrapped in a function). " +
-				"Use `return` to return a value. Example: `const rows = await codemode.sql_query({query: 'SELECT * FROM execution_log'}); return rows;`"
+				"Use `return` to return a value. " +
+				"For fast read-only SQL, use the built-in `query(sql, params)` helper: " +
+				"`const rows = await query('SELECT * FROM execution_log WHERE id > ?', [10]); return rows;` " +
+				"For multiple reads in one round-trip, use `queryBatch([{sql, params}, ...])`. " +
+				"To persist structured data into SQLite, use `store(tableName, arrayOfObjects)` — " +
+				"it creates/evolves tables automatically and returns a small summary. " +
+				"Example: `const rows = await codemode.sql_query({query: 'SELECT * FROM execution_log'}); return rows;`"
 			),
 		},
 		async ({ code }) => {
