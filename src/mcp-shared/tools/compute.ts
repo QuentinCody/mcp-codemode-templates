@@ -1,8 +1,6 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { createEvaluator } from "../codemode/evaluator";
-import { generateTypes } from "../codemode/types";
-import type { ToolRegistry } from "../registry/registry";
+import { createEvaluator, generateTypes, type ToolRegistry } from "@bio-mcp/shared";
 
 export function registerMetaTools(
 	server: McpServer,

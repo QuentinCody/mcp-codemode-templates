@@ -1,11 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { McpAgent } from "agents/mcp";
 import { initializeSchema } from "./schema";
-import { ToolRegistry } from "./registry/registry";
-import { sqlTools } from "./tools/sql";
+import { ToolRegistry, sqlTools, directQueryTools, storeTools } from "@bio-mcp/shared";
 import { weatherTools } from "./tools/weather";
-import { directQueryTools } from "./tools/direct-query";
-import { storeTools } from "./tools/store";
 import { registerMetaTools } from "./tools/compute";
 
 type State = Record<string, never>;

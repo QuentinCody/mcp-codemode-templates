@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { ToolEntry } from "../registry/types";
+import type { ToolEntry } from "@bio-mcp/shared";
 
 interface GeoResult {
 	name: string;
